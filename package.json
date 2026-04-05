@@ -1,0 +1,14 @@
+{
+  "name": "food-ecommerce",
+  "version": "1.0.0",
+  "description": "Food Ecommerce Application",
+  "scripts": {
+    "install-server": "cd server && npm install",
+    "install-client": "cd client && npm install",
+    "build": "npm run install-server && npm run install-client && cd client && npm run build",
+    "start": "cd server && npm start"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}
