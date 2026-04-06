@@ -16,20 +16,21 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem('cartItems', JSON.stringify(cartItems));
   }, [cartItems]);
 
-  const addToCart = (product, quantity) => {
+  const addToCart = (product, weight = 0.5) => {
     const item = {
       product_id: product._id,
       name: product.name,
       price: product.price_per_kg,
       image: product.image,
-      quantity
+      weight: weight,
+      quantity: 1
     };
 
     setCartItems(prev => {
       const existItem = prev.find(x => x.product_id === item.product_id);
       if (existItem) {
         return prev.map(x => x.product_id === existItem.product_id 
-          ? { ...x, quantity: Math.round((x.quantity + quantity) * 10) / 10 } 
+          ? { ...x, quantity: x.quantity + 1 } 
           : x);
       } else {
         return [...prev, item];
@@ -42,15 +43,13 @@ export const CartProvider = ({ children }) => {
   };
 
   const updateQuantity = (id, newQuantity) => {
-      // Minimum is 0.1 (100g)
-      if (newQuantity < 0.1) return;
-      const roundedQuantity = Math.round(newQuantity * 10) / 10;
-      setCartItems(prev => prev.map(x => x.product_id === id ? { ...x, quantity: roundedQuantity } : x));
+      if (newQuantity < 1) return;
+      setCartItems(prev => prev.map(x => x.product_id === id ? { ...x, quantity: Math.max(1, newQuantity) } : x));
   };
 
   const clearCart = () => setCartItems([]);
 
-  const totalAmount = Math.round(cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0));
+  const totalAmount = Math.round(cartItems.reduce((acc, item) => acc + (item.price * (item.weight || 0.5) * item.quantity), 0));
 
   return (
     <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, updateQuantity, clearCart, totalAmount }}>

@@ -36,8 +36,8 @@ const Home = () => {
             <div className="md:w-1/2">
                <span className="inline-block py-1.5 px-4 rounded-full bg-gray-100 text-brand font-bold text-xs uppercase tracking-widest mb-4">Premium Quality • Halal Certified</span>
                <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-gray-900 leading-[1.2]">
-                 Farm Fresh Meats.<br/>
-                 <span className="text-brand">Delivered in 90 Minutes.</span>
+                 Farm Fresh Meats<br/>
+                 <span className="text-brand">Delivered Fresh</span>
                </h1>
                <p className="text-base md:text-lg text-gray-600 mb-8 max-w-lg font-medium leading-relaxed">
                  Hand-picked cuts of premium mutton, chicken, and seafood. Fresh from our farms, straight to your kitchen with our real-time freshness tracker.
@@ -73,7 +73,7 @@ const Home = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {products.slice(0, 4).map((product, idx) => (
-              <div key={product._id} className="card bg-white flex flex-col group border border-gray-200 hover:border-brand/50 shadow-sm hover:shadow-md transition-all duration-300 rounded-lg overflow-hidden">
+              <div key={product._id} className="card bg-white flex flex-col group border border-gray-200 hover:border-brand/50 shadow-sm hover:shadow-md transition-all duration-300 rounded-lg overflow-hidden" title="1 item = 500g">
                 <div className="h-40 overflow-hidden relative bg-gray-100">
                   {product.image ? (
                     <img src={product.image} alt={product.name} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" />
@@ -102,24 +102,53 @@ const Home = () => {
         )}
       </section>
 
-      {/* Categories */}
+      {/* Chicken Cuts Section */}
       <section className="animate-fade-up delay-200">
-        <h2 className="text-2xl md:text-3xl font-bold mb-8 text-gray-900 flex items-center gap-2 border-b border-gray-200 inline-block pb-2">
-          Browse by Category
-        </h2>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="flex justify-between items-end mb-8 border-b border-gray-200 pb-4">
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Premium Chicken Cuts</h2>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {[
-            { cat: 'Curry Cuts', img: '/images/curry_cut.png' }, 
-            { cat: 'Minced (Keema)', img: '/images/keema.png' }, 
-            { cat: 'Bones (Nalli)', img: '/images/nalli.png' }, 
-            { cat: 'Chops & Ribs', img: '/images/chops.png' }
-          ].map((item, i) => (
-            <Link to="/menu" key={i} className="card p-5 flex flex-col items-center text-center group hover:bg-gray-50 transition-colors cursor-pointer border border-gray-200 rounded-lg">
-              <div className="w-20 h-20 mb-4 group-hover:scale-110 transition-transform duration-500 rounded-lg overflow-hidden shadow-sm border border-gray-200">
-                <img src={item.img} alt={item.cat} className="w-full h-full object-cover" />
+            {
+              _id: 'chicken-1',
+              name: 'Chicken Curry Cut (Skin Off)',
+              description: 'Perfect sized chunks ideal for curries and stews',
+              price_per_kg: 280,
+              image: 'https://images.unsplash.com/photo-1585238341710-4dd0de0a3664?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60'
+            },
+            {
+              _id: 'chicken-2',
+              name: 'Chicken Boneless Cubes',
+              description: 'Tender boneless pieces for quick cooking',
+              price_per_kg: 320,
+              image: 'https://images.unsplash.com/photo-1598103442097-8b74394b95c6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60'
+            }
+          ].map((product) => (
+            <div key={product._id} className="card bg-white flex flex-col group border border-gray-200 hover:border-brand/50 shadow-sm hover:shadow-md transition-all duration-300 rounded-lg overflow-hidden" title="1 item = 500g">
+              <div className="h-40 overflow-hidden relative bg-gray-100">
+                {product.image ? (
+                  <img src={product.image} alt={product.name} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-4xl">🍗</div>
+                )}
               </div>
-              <h3 className="font-semibold text-sm text-gray-900">{item.cat}</h3>
-            </Link>
+              
+              <div className="p-4 flex flex-col flex-grow">
+                <h3 className="text-base font-bold text-gray-900 line-clamp-2">{product.name}</h3>
+                <p className="text-gray-600 text-xs mt-1 mb-4 flex-grow line-clamp-2">{product.description}</p>
+                
+                <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
+                  <span className="text-xl font-bold text-brand">₹{product.price_per_kg}</span>
+                  <button 
+                    onClick={() => addToCart(product, 0.5)}
+                    className="btn-primary bg-brand hover:bg-brand-dark text-white text-sm font-semibold px-4 py-2 rounded transition-all"
+                  >
+                    Add
+                  </button>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
       </section>

@@ -55,8 +55,8 @@ const Cart = () => {
     }
   };
 
-  const renderWeight = (qty) => {
-    return qty < 1 ? `${Math.round(qty * 1000)}g` : `${qty} kg`;
+  const renderWeight = (weight) => {
+    return weight < 1 ? `${Math.round(weight * 1000)}g` : `${weight} kg`;
   };
 
   return (
@@ -83,12 +83,12 @@ const Cart = () => {
               </div>
               <div className="flex items-center gap-6">
                 <div className="flex items-center space-x-2">
-                  <button onClick={() => updateQuantity(item.product_id, item.quantity - 0.1)} className="w-8 h-8 rounded-full bg-gray-100 font-bold hover:bg-gray-200">-</button>
-                  <span className="w-14 text-center font-bold text-gray-800">{renderWeight(item.quantity)}</span>
-                  <button onClick={() => updateQuantity(item.product_id, item.quantity + 0.1)} className="w-8 h-8 rounded-full bg-gray-100 font-bold hover:bg-gray-200">+</button>
+                  <button onClick={() => updateQuantity(item.product_id, item.quantity - 1)} className="w-8 h-8 rounded-full bg-gray-100 font-bold hover:bg-gray-200">-</button>
+                  <span className="w-20 text-center font-bold text-gray-800">{item.quantity} × {renderWeight(item.weight)}</span>
+                  <button onClick={() => updateQuantity(item.product_id, item.quantity + 1)} className="w-8 h-8 rounded-full bg-gray-100 font-bold hover:bg-gray-200">+</button>
                 </div>
                 <div className="font-bold text-lg w-20 text-right">
-                  ₹{Math.round(item.price * item.quantity)}
+                  ₹{Math.round(item.price * (item.weight || 0.5) * item.quantity)}
                 </div>
                 <button onClick={() => removeFromCart(item.product_id)} className="text-red-500 hover:text-red-700 p-2 bg-red-50 rounded-full">
                   <Trash2 className="w-5 h-5" />

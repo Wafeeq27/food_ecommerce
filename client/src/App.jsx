@@ -12,7 +12,6 @@ import { ShoppingBag } from 'lucide-react';
 
 function App() {
   const { cartItems, totalAmount } = useContext(CartContext);
-  const itemCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
     <Router>
@@ -30,7 +29,7 @@ function App() {
         </main>
         
         {/* Floating Cart Verification Component */}
-        {itemCount > 0 && (
+        {cartItems.length > 0 && (
           <div className="fixed bottom-0 left-0 right-0 z-50 p-4 pointer-events-none fade-in">
             <div className="max-w-4xl mx-auto pointer-events-auto">
               <Link to="/cart" className="bg-accent text-white rounded-xl shadow-2xl p-4 flex items-center justify-between hover:bg-gray-800 transition-all transform hover:scale-[1.02]">
@@ -39,7 +38,7 @@ function App() {
                        <ShoppingBag className="w-6 h-6" />
                     </div>
                     <div>
-                      <p className="font-bold">{itemCount} items added</p>
+                      <p className="font-bold">{cartItems.reduce((acc, item) => acc + item.quantity, 0)} items in cart</p>
                       <p className="text-xs text-gray-300">Verify items & checkout</p>
                     </div>
                  </div>
