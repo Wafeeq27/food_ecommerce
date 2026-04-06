@@ -6,7 +6,7 @@ import api from '../utils/api';
 import { Trash2, ShoppingBag, ShoppingCart } from 'lucide-react';
 
 const Cart = () => {
-  const { cartItems, removeFromCart, updateQuantity, clearCart, totalAmount } = useContext(CartContext);
+  const [cartItems, removeFromCart, updateQuantity, clearCart, totalAmount] = useContext(CartContext);
   const { user, setAuthModalOpen } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -14,6 +14,27 @@ const Cart = () => {
   const [phone, setPhone] = useState('');
   const [placingOrder, setPlacingOrder] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+
+  const weightOptions = [
+    { label: '250 g', value: 0.25 },
+    { label: '500 g', value: 0.5 },
+    { label: '1 kg', value: 1 },
+    { label: '1.5 kg', value: 1.5 },
+    { label: '2 kg', value: 2 },
+    { label: '3 kg', value: 3 }
+  ];
+
+  const updateItemWeight = (id, newWeight) => {
+    const item = cartItems.find(x => x.product_id === id);
+    if (item) {
+      // Update the weight but keep the same quantity
+      cartItems.forEach(x => {
+        if (x.product_id === id) x.weight = newWeight;
+      });
+      // Trigger a re-render by updating quantity
+      updateQuantity(id, item.quantity);
+    }
+  };
 
   if (cartItems.length === 0) {
     return (
@@ -70,7 +91,7 @@ const Cart = () => {
         <div className="space-y-4">
           {cartItems.map(item => (
             <div key={item.product_id} className="card p-5 flex flex-col sm:flex-row items-center gap-6 border-b-4 border-b-transparent hover:border-b-brand/20">
-              <div className="w-24 h-24 bg-gray-100 rounded-2xl flex-shrink-0 flex items-center justify-center overflow-hidden shadow-inner">
+              <div className="w-24 h-24 bg-gray-100 rounded-lg flex-shrink-0 flex items-center justify-center overflow-hidden shadow-inner">
                 {item.image ? (
                   <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                 ) : (
@@ -78,18 +99,34 @@ const Cart = () => {
                 )}
               </div>
               <div className="flex-grow text-center sm:text-left">
-                <h3 className="text-xl font-semibold">{item.name}</h3>
-                <p className="text-gray-500 font-medium mt-1">₹{item.price} / kg</p>
+                <h3 className="text-lg font-bold text-gray-900">{item.name}</h3>
+                <p className="text-gray-600 font-medium mt-1">₹{item.price} / kg</p>
               </div>
-              <div className="flex items-center gap-6">
+              <div className="flex flex-col sm:flex-row items-center gap-4">
+                {/* Quantity */}
                 <div className="flex items-center space-x-2">
-                  <button onClick={() => updateQuantity(item.product_id, item.quantity - 1)} className="w-8 h-8 rounded-full bg-gray-100 font-bold hover:bg-gray-200">-</button>
-                  <span className="w-20 text-center font-bold text-gray-800">{item.quantity} × {renderWeight(item.weight)}</span>
+                  <button onClick={() => updateQuantity(item.product_id, item.quantity - 1)} className="w-8 h-8 rounded-full bg-gray-100 font-bold hover:bg-gray-200">−</button>
+                  <span className="w-12 text-center font-bold text-gray-800">{item.quantity}</span>
                   <button onClick={() => updateQuantity(item.product_id, item.quantity + 1)} className="w-8 h-8 rounded-full bg-gray-100 font-bold hover:bg-gray-200">+</button>
                 </div>
-                <div className="font-bold text-lg w-20 text-right">
+
+                {/* Weight Selection */}
+                <select 
+                  value={item.weight || 0.5}
+                  onChange={(e) => updateItemWeight(item.product_id, parseFloat(e.target.value))}
+                  className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white font-medium"
+                >
+                  {weightOptions.map(opt => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
+
+                {/* Price */}
+                <div className="font-bold text-lg w-24 text-right text-brand">
                   ₹{Math.round(item.price * (item.weight || 0.5) * item.quantity)}
                 </div>
+                
+                {/* Delete Button */}
                 <button onClick={() => removeFromCart(item.product_id)} className="text-red-500 hover:text-red-700 p-2 bg-red-50 rounded-full">
                   <Trash2 className="w-5 h-5" />
                 </button>

@@ -115,7 +115,7 @@ const Home = () => {
               name: 'Chicken Curry Cut (Skin Off)',
               description: 'Perfect sized chunks ideal for curries and stews',
               price_per_kg: 280,
-              image: 'https://images.unsplash.com/photo-1585238341710-4dd0de0a3664?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60'
+              image: 'https://images.unsplash.com/photo-1598103442097-8b74394b95c6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60'
             },
             {
               _id: 'chicken-2',

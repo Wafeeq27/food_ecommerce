@@ -14,7 +14,7 @@ const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('orders'); // 'orders' or 'menu'
 
   // Product Form State
-  const [formData, setFormData] = useState({ id: null, name: '', price_per_kg: '', description: '', image: '' });
+  const [formData, setFormData] = useState({ id: null, name: '', price_per_kg: '', description: '', image: '', discount: 0 });
   const [isEditing, setIsEditing] = useState(false);
   const [msg, setMsg] = useState({ type: '', text: '' });
 
@@ -95,7 +95,8 @@ const AdminDashboard = () => {
       name: product.name,
       price_per_kg: product.price_per_kg,
       description: product.description || '',
-      image: product.image || ''
+      image: product.image || '',
+      discount: product.discount || 0
     });
     setActiveTab('menu');
     window.scrollTo(0, 0);
@@ -115,7 +116,7 @@ const AdminDashboard = () => {
 
   const resetForm = () => {
     setIsEditing(false);
-    setFormData({ id: null, name: '', price_per_kg: '', description: '', image: '' });
+    setFormData({ id: null, name: '', price_per_kg: '', description: '', image: '', discount: 0 });
   };
 
   if (loading) return <div className="text-center py-20 text-xl font-medium animate-pulse">Loading Administrative Data...</div>;
@@ -299,6 +300,13 @@ const AdminDashboard = () => {
                   <input required type="number" name="price_per_kg" value={formData.price_per_kg} onChange={handleProductChange} className="input-field bg-gray-50" placeholder="950" />
                 </div>
                 <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-1">Discount (%)</label>
+                  <input type="number" min="0" max="100" name="discount" value={formData.discount} onChange={handleProductChange} className="input-field bg-gray-50" placeholder="10" />
+                  {formData.discount > 0 && (
+                    <p className="text-xs text-green-600 mt-1 font-medium">Discounted price: ₹{Math.round(formData.price_per_kg * (1 - formData.discount / 100))}</p>
+                  )}
+                </div>
+                <div>
                   <label className="block text-sm font-bold text-gray-700 mb-1">Description</label>
                   <textarea rows="3" name="description" value={formData.description} onChange={handleProductChange} className="input-field bg-gray-50" placeholder="Describe the cut..."></textarea>
                 </div>
@@ -345,14 +353,23 @@ const AdminDashboard = () => {
                 {products.length === 0 ? (
                   <li className="p-8 text-center text-gray-500">No items on the menu. Add some!</li>
                 ) : products.map(product => (
-                  <li key={product._id} className="p-4 sm:p-6 hover:bg-gray-50 flex items-center justify-between gap-4">
+                  <li key={product._id} className="p-4 sm:p-6 hover:bg-gray-50 flex items-center justify-between gap-4 relative">
+                    {product.discount > 0 && (
+                      <div className="absolute top-2 right-16 bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">
+                        {product.discount}% OFF
+                      </div>
+                    )}
                     <div className="flex items-center gap-4 flex-grow">
                       <div className="w-16 h-16 bg-gray-200 rounded-md overflow-hidden flex-shrink-0 border shadow-sm">
                         {product.image ? <img src={product.image} className="w-full h-full object-cover"/> : <div className="w-full h-full flex items-center justify-center text-2xl">🥩</div>}
                       </div>
                       <div>
                         <h4 className="text-lg font-bold text-gray-900 line-clamp-1">{product.name}</h4>
-                        <div className="text-brand font-black text-sm mt-1">₹{product.price_per_kg} <span className="font-medium text-gray-500">/ kg</span></div>
+                        <div className="text-brand font-black text-sm mt-1">
+                          ₹{Math.round(product.price_per_kg * (1 - (product.discount || 0) / 100))} 
+                          {product.discount > 0 && <span className="line-through text-gray-400 ml-2">₹{product.price_per_kg}</span>}
+                          <span className="font-medium text-gray-500"> / kg</span>
+                        </div>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
