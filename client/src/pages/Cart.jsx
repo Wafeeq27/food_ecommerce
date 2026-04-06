@@ -70,16 +70,17 @@ const Cart = () => {
       const response = await api.post('/orders', orderData);
       const orderId = response.data._id || response.data.id;
 
-      // Send confirmation emails
-      try {
-        await Promise.all([
-          sendCustomerEmail({ ...orderData, orderId }, user.email, user.name),
-          sendAdminEmail({ ...orderData, orderId }, user.email, user.name)
-        ]);
-        console.log('Emails sent successfully');
-      } catch (emailError) {
-        console.warn('Email sending failed:', emailError);
-        // Don't fail the order if email fails
+      // Send confirmation emails (fire-and-forget, don't block checkout)
+      sendCustomerEmail({ ...orderData, orderId }, user.email, user.name)
+        .then(() => console.log('Customer email sent successfully'))
+        .catch(emailError => console.warn('Customer email failed:', emailError));
+
+      // Only send admin email if template is configured
+      if (import.meta.env.VITE_EMAILJS_ADMIN_TEMPLATE_ID && 
+          import.meta.env.VITE_EMAILJS_ADMIN_TEMPLATE_ID !== 'your_admin_template_id_here') {
+        sendAdminEmail({ ...orderData, orderId }, user.email, user.name)
+          .then(() => console.log('Admin email sent successfully'))
+          .catch(emailError => console.warn('Admin email failed:', emailError));
       }
 
       clearCart();
