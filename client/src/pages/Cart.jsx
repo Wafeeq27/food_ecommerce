@@ -3,6 +3,7 @@ import { CartContext } from '../context/CartContext';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../utils/api';
+import { sendCustomerEmail, sendAdminEmail } from '../utils/emailService';
 import { Trash2, ShoppingBag, ShoppingCart } from 'lucide-react';
 
 const Cart = () => {
@@ -66,9 +67,23 @@ const Cart = () => {
         phone
       };
 
-      await api.post('/orders', orderData);
+      const response = await api.post('/orders', orderData);
+      const orderId = response.data._id || response.data.id;
+
+      // Send confirmation emails
+      try {
+        await Promise.all([
+          sendCustomerEmail({ ...orderData, orderId }, user.email, user.name),
+          sendAdminEmail({ ...orderData, orderId }, user.email, user.name)
+        ]);
+        console.log('Emails sent successfully');
+      } catch (emailError) {
+        console.warn('Email sending failed:', emailError);
+        // Don't fail the order if email fails
+      }
+
       clearCart();
-      navigate('/order-confirmation', { state: { message: 'Your mutton order is on its way. Sit back and relax!' } });
+      navigate('/order-confirmation', { state: { message: 'Your mutton order is on its way. Check your email for confirmation!' } });
     } catch (error) {
       setErrorMsg(error.response?.data?.message || 'Failed to place order.');
     } finally {
