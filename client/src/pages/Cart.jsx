@@ -7,7 +7,7 @@ import { sendCustomerEmail, sendAdminEmail } from '../utils/emailService';
 import { Trash2, ShoppingBag, ShoppingCart } from 'lucide-react';
 
 const Cart = () => {
-  const [cartItems, removeFromCart, updateQuantity, clearCart, totalAmount] = useContext(CartContext);
+  const { cartItems, removeFromCart, updateQuantity, clearCart, totalAmount } = useContext(CartContext);
   const { user, setAuthModalOpen } = useContext(AuthContext);
   const navigate = useNavigate();
 
